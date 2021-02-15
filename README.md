@@ -3,6 +3,9 @@
 
 # Engie-PowerPlant
 
+![](logos/swagger.png)
+
+
 - [Engie-PowerPlant](#engie-powerplant)
   * [Run  and Install the application](#run-and-install-the-application)
     + [Single Host](#single-host)
