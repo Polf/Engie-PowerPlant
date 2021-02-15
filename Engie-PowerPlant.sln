@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.808.6
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerPlant.API", "PowerPlant.API\PowerPlant.API.csproj", "{C925D149-142E-4873-9A0F-767D55835846}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerPlant.Tests", "PowerPlant.Tests\PowerPlant.Tests.csproj", "{2F1EB64D-A09B-4477-B3C3-EAD017310666}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|anycpu = Debug|anycpu
+		Release|anycpu = Release|anycpu
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C925D149-142E-4873-9A0F-767D55835846}.Debug|anycpu.ActiveCfg = Debug|Any CPU
+		{C925D149-142E-4873-9A0F-767D55835846}.Debug|anycpu.Build.0 = Debug|Any CPU
+		{C925D149-142E-4873-9A0F-767D55835846}.Release|anycpu.ActiveCfg = Release|Any CPU
+		{C925D149-142E-4873-9A0F-767D55835846}.Release|anycpu.Build.0 = Release|Any CPU
+		{2F1EB64D-A09B-4477-B3C3-EAD017310666}.Debug|anycpu.ActiveCfg = Debug|Any CPU
+		{2F1EB64D-A09B-4477-B3C3-EAD017310666}.Debug|anycpu.Build.0 = Debug|Any CPU
+		{2F1EB64D-A09B-4477-B3C3-EAD017310666}.Release|anycpu.ActiveCfg = Release|Any CPU
+		{2F1EB64D-A09B-4477-B3C3-EAD017310666}.Release|anycpu.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4B8142CA-5F64-4B97-BB8B-542B27053351}
+	EndGlobalSection
+EndGlobal
