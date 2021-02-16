@@ -23,7 +23,7 @@ namespace PowerPlant.API.Services
 
             var payload = _payLoadConverter.ToModel(dto);
             
-            var powerPlantByMeritOrder = payload.PowerPlants.OrderBy(p => p.ComputePricePerMwh());
+            var powerPlantByMeritOrder = payload.PowerPlants.OrderBy(p => p.ComputePricePerMwh()).ThenBy(p => p.Pmin);
 
             var load = payload.Load;
 
