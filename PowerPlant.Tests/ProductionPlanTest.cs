@@ -16,10 +16,10 @@ namespace PowerPlant.Tests
               setup
 
              */
-
-            PowerPlantConverter converter = new PowerPlantConverter();
-            FuelConverter fuelConverter = new FuelConverter();
-            var service = new PowerPlantService(converter, fuelConverter);
+            IPowerPlantConverter converter = new PowerPlantConverter();
+            IFuelConverter fuelconverter = new FuelConverter();
+            IPayLoadConverter payLoadConverter = new PayLoadConverter(converter, fuelconverter);
+            var service = new PowerPlantService(converter, payLoadConverter);
 
             //fuel Dictionnary
 
@@ -69,8 +69,8 @@ namespace PowerPlant.Tests
             var exceptedResult = new[] {
 
                 new PowerPlantInputDto { Name = "windpark1", Power = 90 },
-                new PowerPlantInputDto { Name = "windpark2", Power = 21 },
-                new PowerPlantInputDto { Name = "gasfirebig1", Power = 369 },
+                new PowerPlantInputDto { Name = "windpark2", Power = 21.6f },
+                new PowerPlantInputDto { Name = "gasfirebig1", Power = 368.4f },
                 new PowerPlantInputDto { Name = "gasfirebig2", Power = 0 },
                 new PowerPlantInputDto { Name = "gasfiredsomewhatsmaller", Power = 0 },
                  new PowerPlantInputDto { Name = "tj1", Power = 0 }
@@ -93,9 +93,10 @@ namespace PowerPlant.Tests
 
              */
 
-            var converter = new PowerPlantConverter();
-            var fuelConverter = new FuelConverter();
-            var service = new PowerPlantService(converter, fuelConverter);
+            IPowerPlantConverter converter = new PowerPlantConverter();
+            IFuelConverter fuelconverter = new FuelConverter();
+            IPayLoadConverter payLoadConverter = new PayLoadConverter(converter,fuelconverter);
+            var service = new PowerPlantService(converter, payLoadConverter);
 
             //fuel Dictionnary
 
@@ -145,8 +146,8 @@ namespace PowerPlant.Tests
             var exceptedResult = new[] {
 
                 new PowerPlantInputDto { Name = "windpark1", Power = 90 },
-                new PowerPlantInputDto { Name = "windpark2", Power = 21 },
-                new PowerPlantInputDto { Name = "gasfirebig1", Power = 360 },
+                new PowerPlantInputDto { Name = "windpark2", Power = 21.6f },
+                new PowerPlantInputDto { Name = "gasfirebig1", Power = 368.4f },
                 new PowerPlantInputDto { Name = "gasfirebig2", Power = 100},
                 new PowerPlantInputDto { Name = "gasfiredsomewhatsmaller", Power = 0 },
                  new PowerPlantInputDto { Name = "tj1", Power = 0 }
@@ -166,10 +167,10 @@ namespace PowerPlant.Tests
               setup
 
              */
-
-            var converter = new PowerPlantConverter();
-            var fuelConverter = new FuelConverter();
-            var service = new PowerPlantService(converter, fuelConverter);
+            IPowerPlantConverter converter = new PowerPlantConverter();
+            IFuelConverter fuelconverter = new FuelConverter();
+            IPayLoadConverter payLoadConverter = new PayLoadConverter(converter, fuelconverter);
+            var service = new PowerPlantService(converter, payLoadConverter);
 
             //fuel Dictionnary
 
@@ -219,9 +220,9 @@ namespace PowerPlant.Tests
             var exceptedResult = new[] {
 
                 new PowerPlantInputDto { Name = "windpark1", Power = 90 },
-                new PowerPlantInputDto { Name = "windpark2", Power = 21 },
+                new PowerPlantInputDto { Name = "windpark2", Power = 21.6f},
                 new PowerPlantInputDto { Name = "gasfirebig1", Power = 460 },
-                new PowerPlantInputDto { Name = "gasfirebig2", Power = 339},
+                new PowerPlantInputDto { Name = "gasfirebig2", Power = 338.4f},
                 new PowerPlantInputDto { Name = "gasfiredsomewhatsmaller", Power = 0 },
                  new PowerPlantInputDto { Name = "tj1", Power = 0 }
 

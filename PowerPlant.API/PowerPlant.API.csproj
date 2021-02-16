@@ -16,5 +16,16 @@
     <Folder Include="Repositories\" />
     <Folder Include="Dtos\" />
     <Folder Include="Converters\" />
+    <Folder Include="Models\Fuels\" />
+    <Folder Include="Models\PowerPlant\" />
+    <Folder Include="Models\PayLoad\" />
+    <Folder Include="Converters\Abstract\" />
+    <Folder Include="Converters\Fuel\" />
+    <Folder Include="Converters\PowerPlant\" />
+    <Folder Include="Dtos\Fuel\" />
+    <Folder Include="Dtos\PowerPlant\" />
+    <Folder Include="Dtos\PayLoad\" />
+    <Folder Include="Services\PowerPlant\" />
+    <Folder Include="Converters\PayLoad\" />
   </ItemGroup>
 </Project>

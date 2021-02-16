@@ -31,7 +31,7 @@ namespace PowerPlant.API.Models
 
         public virtual IFuel Fuel { get; set; }
 
-        public virtual float Power { get; set; }
+        public virtual float Power { get ; set; }
 
 
         public virtual float ComputeTotalPrice()

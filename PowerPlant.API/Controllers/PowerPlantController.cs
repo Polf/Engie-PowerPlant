@@ -25,7 +25,8 @@ namespace PowerPlant.API.Controllers
             try
             {
                 var dtos = _service.Compute(payload);
-                return Ok(from dto in dtos select (dto.Name, dto.Power));
+                var responses = (from dto in dtos select new { name = dto.Name, p = dto.Power}).ToArray();
+                return Ok(responses);
             }
             catch (Exception ex)
             {

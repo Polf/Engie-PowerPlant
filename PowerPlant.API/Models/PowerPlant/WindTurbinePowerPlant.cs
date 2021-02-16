@@ -7,7 +7,7 @@ namespace PowerPlant.API.Models
 
         public WindTurbinePowerPlant()
         {
-            Power = (float)Math.Floor(WindPercentage * Pmax);
+            Power = (float)Math.Round(WindPercentage * Pmax, 1);
         }
 
         public WindTurbinePowerPlant(string name, float efficiency, float pmin, float pmax, IFuel fuel, float power) :
@@ -19,7 +19,7 @@ namespace PowerPlant.API.Models
 
         public override float Power
         {
-            get { return (float)Math.Floor(WindPercentage * Pmax); }
+            get { return (float)Math.Round(WindPercentage * Pmax,1); }
         }
 
         public override IFuel Fuel

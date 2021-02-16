@@ -25,6 +25,7 @@ namespace PowerPlant.API
             services.AddControllers();
             services.AddScoped<IPowerPlantConverter, PowerPlantConverter>();
             services.AddScoped<IFuelConverter, FuelConverter>();
+            services.AddScoped<IPayLoadConverter, PayLoadConverter>();
             services.AddScoped<IPowerPlantService, PowerPlantService>();
             services.AddSwaggerGen(c =>
             {
