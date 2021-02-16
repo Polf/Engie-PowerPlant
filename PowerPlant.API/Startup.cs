@@ -1,3 +1,4 @@
+using System.Net.WebSockets;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PowerPlant.API.Converters;
 using PowerPlant.API.Services;
+
 
 namespace PowerPlant.API
 {
@@ -23,6 +25,7 @@ namespace PowerPlant.API
         {
 
             services.AddControllers();
+            services.AddCors();
             services.AddScoped<IPowerPlantConverter, PowerPlantConverter>();
             services.AddScoped<IFuelConverter, FuelConverter>();
             services.AddScoped<IPayLoadConverter, PayLoadConverter>();
@@ -36,13 +39,18 @@ namespace PowerPlant.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-           
-            app.UseDeveloperExceptionPage();
+
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PowerPlant.API v1"));
-            
 
             app.UseHttpsRedirection();
+
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             app.UseRouting();
 
@@ -52,6 +60,7 @@ namespace PowerPlant.API
             {
                 endpoints.MapControllers();
             });
+
         }
     }
 }

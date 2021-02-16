@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using PowerPlant.API.Dtos;
 using PowerPlant.API.Services;
 
-
 namespace PowerPlant.API.Controllers
 {
     [ApiController]
@@ -35,5 +34,8 @@ namespace PowerPlant.API.Controllers
 
 
         }
+
+
+
     }
 }

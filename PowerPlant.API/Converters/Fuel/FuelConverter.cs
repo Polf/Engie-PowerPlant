@@ -38,7 +38,7 @@ namespace PowerPlant.API.Converters
                     fuels.Add(new KerosineFuel { PricePerMwh = f.Value , Co2PricePerTon = co2Price });
 
                 else if (f.Key.ToLower().StartsWith(FuelType.GAS.ToString().ToLower()))
-                    fuels.Add(new GasFuel { PricePerMwh = f.Value, Co2PricePerTon = co2Price });
+                    fuels.Add(new GasFuel { PricePerMwh = f.Value, Co2PricePerTon = co2Price, Co2EmmittedPerMwh = FuelParams.CO2_GAS_PER_MWH });
 
                 else if (f.Key.ToLower().StartsWith(FuelType.WIND.ToString().ToLower()))
                     fuels.Add(new WindFuel { PricePerMwh = 0, Co2PricePerTon = co2Price, WindPower = f.Value });
