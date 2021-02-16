@@ -1,8 +1,8 @@
 ﻿namespace PowerPlant.API.Models
 {
-    public class GasFuel:Fuel
+    public class KerosineFuel:Fuel
     {
-        public GasFuel()
+        public KerosineFuel()
         {
 
         }
