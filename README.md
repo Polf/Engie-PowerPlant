@@ -91,6 +91,8 @@ I use TDD with MSTest during the implmentantion with  Service , Converter , Dto 
 The Ioc Container , We can add easily a new Power Plant type without affecting the behavior of the other components 
 
 Controller ->  Converter ( Dto ) - >  Service ( Model / Entity ) 
+
+
 Controller <-  Converter ( Dto ) <-  Service ( Model / Entity ) 
 
 
