@@ -68,6 +68,39 @@ The app provide API specification for any client implementation :
 
 # Technical Approach
 
+The must important factor is  price per MWH   , so we choose as much as posssible the powerplant that produce the cheapest energy.
+The final sum of price (  price load = Σ Pi* Cost i ) shoud be cheapest of all possible case . A kind of mathematicl function with many variables !
+
+But the critera are : 
+
+- Considering their efficiency ( less efficient will cost more )
+- Include Co2 allowance price in the price 
+- Consider the Pmin constraint : We need only to produce energy that match exaclty the load , no wast 
+- Windturbine , Solar energy and renewable depend on external factors ( weather , sun power , temperature ) 
+
+
+1 - Order by cheaeast price ( unclude C02 price) 
+2-  Order by Pmin 
+3- Loop via list till all the sum match the load ,  
+4 - Because of Pmin ,  We are forced use  unecessary overflow of power , so during the loop we have to  ajust sometimes the power calculation for 02 successive powerplant 
+
+
+# Design Pattern 
+
+I use TDD with MSTest during the implmentantion with  Service , Converter , Dto  and  Strategy Pattern , each component in the app can injected and mocked with 
+The Ioc Container , We can add easily a new Power Plant type without affecting the behavior of the other components 
+
+Controller ->  Converter ( Dto ) - >  Service ( Model / Entity ) 
+Controller <-  Converter ( Dto ) <-  Service ( Model / Entity ) 
+
+
+![](logos/powerplantclass-diag.png)
+
+
+
+
+
+
 
  
 
