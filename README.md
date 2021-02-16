@@ -21,19 +21,19 @@
 
 My implementation of : [powerplant-coding-challenge](https://github.com/gem-spaas/powerplant-coding-challenge)
 
-The application I have develop is based on the .NET Core 5.0  ,  a full Web APi ( Restfull ) 
+The application I have developped is based on the .NET Core 5.0  ,  a full Web API ( Restfull ) 
 
-A ligtweigth applicartion that we deploy in the cloud ( app services or  a aks ) 
+A lightweight application that we can deploy in the cloud ( Azure app services or  AZure kubernetes services) 
 
 # Run and Install the application
-The easiest way is to install Visual studio community edition and the just run the app 
+The easiest way is to install Visual studio community edition and just run the app.
 
 ## Single Host
 ### Depedencies
- We need the follolwing package :
+ We need the follolwing packages :
   - A Windows , Mac or Linux machine 
   - dotnet core sdk and runtime , version 5.0  ( Cf : [Donwload .Net core runtime](https://dotnet.microsoft.com/download) )
-  - basic knowledge on command line with the dotnet CLI
+  - basic knowledge of the  command line with the dotnet CLI
     
 ### Command
 
@@ -62,27 +62,27 @@ The easiest way is to install Visual studio community edition and the just run t
   
 # Open API Specification of the application
 
-The app provide API specification for any client implementation : 
+The app provides API specification for any client implementation : 
 
 - On local `http://localhost:8888/swagger/index.html`
 - Route : `/swagger/index.html`
 
 # Technical Approach
 
-The must important factor is the price per MWH   , so we have to choose the powerplant that produce the cheapest energy (price).
-The final sum of all prices (  price load = Σ Pi* Cost i ) should optimized at the end of the calculation . A kind of mathematical function with many variables !
+The most important factor is the price per MWH   , so we have to choose the powerplants that produce the cheapest energy (price).
+The final sum of all prices (  price load = Σ Pi* Cost i ) should be optimized at the end of the calculation . A kind of mathematical function with many variables !
 
 But the critera are : 
 
 - Considering their efficiency ( less efficient will cost more )
-- Include Co2 allowance price in the price 
+- Include Co2 allowance price in the final price 
 - Consider the Pmin constraint : We need only to produce energy that match exaclty the load , no waste 
 - Windturbine , Solar energy and renewable are depending on external factors ( weather , sun power , temperature , pressure ) 
 
 
 1 - Order by cheapast price ( unclude C02 price) 
 2-  Order by Pmin 
-3- Loop via list till all the sum match the load ,  
+3- Loop via the list till all the sum match the load ,  
 4 - Because of Pmin ,  We are forced to use  unecessary overflow of power , so during the loop we have to  ajust sometimes the power calculation for 02 successive powerplant in order to distribute it correclty.
 
 
