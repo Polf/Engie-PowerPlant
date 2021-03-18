@@ -5,6 +5,7 @@
 //<email>a.famantanantsoa@gmail.com</>
 // <date>16/02/2021 09:15:00 AM </date>
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PowerPlant.API.Converters;
 using PowerPlant.API.Dtos;
@@ -59,7 +60,8 @@ namespace PowerPlant.Tests
 
 
             //3 the payload
-            var payload = new PayLoadDto {
+            var payload = new PayLoadDto
+            {
                 Load = 480,
                 Fuels = fuelsDict,
                 PowerPlants = powerPlants
@@ -101,7 +103,7 @@ namespace PowerPlant.Tests
 
             IPowerPlantConverter converter = new PowerPlantConverter();
             IFuelConverter fuelconverter = new FuelConverter();
-            IPayLoadConverter payLoadConverter = new PayLoadConverter(converter,fuelconverter);
+            IPayLoadConverter payLoadConverter = new PayLoadConverter(converter, fuelconverter);
             var service = new PowerPlantService(converter, payLoadConverter);
 
             //fuel Dictionnary
@@ -114,22 +116,22 @@ namespace PowerPlant.Tests
             };
 
 
-            var pw1 = new PowerPlantInputDto { Name = "gasfirebig1",Type = "gasfired",  Efficiency = 0.53f, Pmax = 460, Pmin = 100 };
+            var pw1 = new PowerPlantInputDto { Name = "gasfirebig1", Type = "gasfired", Efficiency = 0.53f, Pmax = 460, Pmin = 100 };
 
 
-            var pw2 = new PowerPlantInputDto { Name = "gasfirebig2",Type = "gasfired" ,  Efficiency = 0.53f, Pmax = 460, Pmin = 100 };
+            var pw2 = new PowerPlantInputDto { Name = "gasfirebig2", Type = "gasfired", Efficiency = 0.53f, Pmax = 460, Pmin = 100 };
 
 
-            var pw3 = new PowerPlantInputDto { Name = "gasfiredsomewhatsmaller",  Type= "gasfired" , Efficiency = 0.37f, Pmax = 210, Pmin = 40 };
+            var pw3 = new PowerPlantInputDto { Name = "gasfiredsomewhatsmaller", Type = "gasfired", Efficiency = 0.37f, Pmax = 210, Pmin = 40 };
 
 
-            var pw4 = new PowerPlantInputDto { Name = "tj1", Type= "turbojet", Efficiency = 0.3f, Pmax = 16, Pmin = 0, };
+            var pw4 = new PowerPlantInputDto { Name = "tj1", Type = "turbojet", Efficiency = 0.3f, Pmax = 16, Pmin = 0, };
 
 
-            var pw5 = new PowerPlantInputDto { Name = "windpark1",Type= "windturbine", Efficiency = 1f, Pmax = 150, Pmin = 0 };
+            var pw5 = new PowerPlantInputDto { Name = "windpark1", Type = "windturbine", Efficiency = 1f, Pmax = 150, Pmin = 0 };
 
 
-            var pw6 = new PowerPlantInputDto { Name = "windpark2", Type= "windturbine" ,Efficiency = 1f, Pmax = 36, Pmin = 0 };
+            var pw6 = new PowerPlantInputDto { Name = "windpark2", Type = "windturbine", Efficiency = 1f, Pmax = 36, Pmin = 0 };
 
 
             var powerPlants = new List<PowerPlantInputDto> { pw1, pw2, pw3, pw4, pw5, pw6 }.ToArray();
@@ -317,6 +319,396 @@ namespace PowerPlant.Tests
         }
 
 
+        [TestMethod]
+        public void GivenOnlyOnePlantWithHighPminAndLowRequestedLoad_ShouldNotReturnLoad()
+        {
+            IPowerPlantConverter converter = new PowerPlantConverter();
+            IFuelConverter fuelconverter = new FuelConverter();
+            IPayLoadConverter payLoadConverter = new PayLoadConverter(converter, fuelconverter);
+            var service = new PowerPlantService(converter, payLoadConverter);
+            var fuelsDict = new Dictionary<string, float> {
+                { "gas(euro/MWh)", 13.4f} ,
+                { "kerosine(euro/MWh)", 50.8f},
+                { "co2(euro/ton)", 20f},
+                { "wind(%)", 60f}
+            };
+
+
+            var pw2 = new PowerPlantInputDto { Name = "gasfirebig2", Type = "gasfired", Efficiency = 1f, Pmax = 460, Pmin = 100 };
+
+            var powerPlants = new List<PowerPlantInputDto> { pw2 }.ToArray();
+
+
+            //3 the payload
+            var payload = new PayLoadDto
+            {
+                Load = 50,
+                Fuels = fuelsDict,
+                PowerPlants = powerPlants
+            };
+
+
+
+            //act
+
+            var result = service.Compute(payload);
+
+            var exceptedResult = new[] {
+
+                 new PowerPlantInputDto { Name = "gasfirebig2", Power = 0 },
+            };
+
+            var hashet = new HashSet<PowerPlantInputDto>(result);
+
+            Assert.AreNotEqual(payload.Load, result.Sum(r => r.Power));
+            Assert.IsFalse(hashet.SetEquals(exceptedResult));
+        }
+
+        [TestMethod]
+        public void GivenPlantWithHighMeritOrderAndHighPminAndSecondPlantOfDifferentFuelPrice_ShouldExcludePlantFromLoad()
+        {
+            IPowerPlantConverter converter = new PowerPlantConverter();
+            IFuelConverter fuelconverter = new FuelConverter();
+            IPayLoadConverter payLoadConverter = new PayLoadConverter(converter, fuelconverter);
+            var service = new PowerPlantService(converter, payLoadConverter);
+            var fuelsDict = new Dictionary<string, float> {
+                { "gas(euro/MWh)", 13.4f} ,
+                { "kerosine(euro/MWh)", 50.8f},
+                { "co2(euro/ton)", 20f},
+                { "wind(%)", 60f}
+            };
+
+
+            var pw2 = new PowerPlantInputDto { Name = "gasfirebig2", Type = "gasfired", Efficiency = 1f, Pmax = 460, Pmin = 100 };
+
+
+            var pw4 = new PowerPlantInputDto { Name = "tj1", Type = "turbojet", Efficiency = 1f, Pmax = 16, Pmin = 0, };
+
+            var powerPlants = new List<PowerPlantInputDto> { pw2, pw4 }.ToArray();
+
+
+            //3 the payload
+            var payload = new PayLoadDto
+            {
+                Load = 16,
+                Fuels = fuelsDict,
+                PowerPlants = powerPlants
+            };
+
+
+
+            //act
+
+            var result = service.Compute(payload);
+
+            var exceptedResult = new[] {
+
+                 new PowerPlantInputDto { Name = "tj1", Power = 16 },
+                 new PowerPlantInputDto { Name = "gasfirebig2", Power = 0 },
+            };
+
+            var hashet = new HashSet<PowerPlantInputDto>(result);
+
+            Assert.AreEqual(payload.Load, result.Sum(r => r.Power));
+            Assert.IsTrue(hashet.SetEquals(exceptedResult));
+        }
+
+        [TestMethod]
+        public void GivenPlantWithHighMeritOrderAndHighPminAndSecondPlantOfSameFuelPrice_ShouldExcludePlantFromLoad()
+        {
+            IPowerPlantConverter converter = new PowerPlantConverter();
+            IFuelConverter fuelconverter = new FuelConverter();
+            IPayLoadConverter payLoadConverter = new PayLoadConverter(converter, fuelconverter);
+            var service = new PowerPlantService(converter, payLoadConverter);
+            var fuelsDict = new Dictionary<string, float> {
+                { "gas(euro/MWh)", 13.4f} ,
+                { "kerosine(euro/MWh)", 50.8f},
+                { "co2(euro/ton)", 20f},
+                { "wind(%)", 60f}
+            };
+
+
+            var pw2 = new PowerPlantInputDto { Name = "gasfirebig1", Type = "gasfired", Efficiency = 1f, Pmax = 460, Pmin = 100 };
+
+
+            var pw4 = new PowerPlantInputDto { Name = "gasfirebig2", Type = "gasfired", Efficiency = 1f, Pmax = 16, Pmin = 0, };
+
+            var powerPlants = new List<PowerPlantInputDto> { pw2, pw4 }.ToArray();
+
+
+            //3 the payload
+            var payload = new PayLoadDto
+            {
+                Load = 16,
+                Fuels = fuelsDict,
+                PowerPlants = powerPlants
+            };
+
+
+
+            //act
+
+            var result = service.Compute(payload);
+
+            var exceptedResult = new[] {
+
+                 new PowerPlantInputDto { Name = "gasfirebig1", Power = 0 },
+                 new PowerPlantInputDto { Name = "gasfirebig2", Power = 16 },
+            };
+
+            var hashet = new HashSet<PowerPlantInputDto>(result);
+
+            Assert.AreEqual(payload.Load, result.Sum(r => r.Power));
+            Assert.IsTrue(hashet.SetEquals(exceptedResult));
+        }
+
+        [TestMethod]
+        public void GivenSecondPlantWithHighPminAndFirstAndThirdPlantOfDifferentFuelPrice_ShouldExcludeSecondPlantFromLoad()
+        {
+            IPowerPlantConverter converter = new PowerPlantConverter();
+            IFuelConverter fuelconverter = new FuelConverter();
+            IPayLoadConverter payLoadConverter = new PayLoadConverter(converter, fuelconverter);
+            var service = new PowerPlantService(converter, payLoadConverter);
+            var fuelsDict = new Dictionary<string, float> {
+                { "gas(euro/MWh)", 13.4f} ,
+                { "kerosine(euro/MWh)", 50.8f},
+                { "co2(euro/ton)", 20f},
+                { "wind(%)", 100f}
+            };
+
+
+            var pw5 = new PowerPlantInputDto { Name = "windpark1", Type = "windturbine", Efficiency = 1f, Pmax = 100, Pmin = 0 };
+
+            var pw2 = new PowerPlantInputDto { Name = "gasfirebig2", Type = "gasfired", Efficiency = 1f, Pmax = 460, Pmin = 100 };
+
+
+            var pw4 = new PowerPlantInputDto { Name = "tj1", Type = "turbojet", Efficiency = 1f, Pmax = 16, Pmin = 0, };
+
+            var powerPlants = new List<PowerPlantInputDto> { pw2, pw4, pw5 }.ToArray();
+
+
+            //3 the payload
+            var payload = new PayLoadDto
+            {
+                Load = 116,
+                Fuels = fuelsDict,
+                PowerPlants = powerPlants
+            };
+
+
+
+            //act
+
+            var result = service.Compute(payload);
+
+            var exceptedResult = new[] {
+                 new PowerPlantInputDto { Name = "tj1", Power = 16 },
+                 new PowerPlantInputDto { Name = "gasfirebig2", Power = 0 },
+                 new PowerPlantInputDto { Name = "windpark1", Power = 100 },
+         };
+
+            var hashet = new HashSet<PowerPlantInputDto>(result);
+
+            Assert.AreEqual(payload.Load, result.Sum(r => r.Power));
+            Assert.IsTrue(hashet.SetEquals(exceptedResult));
+        }
+
+        [TestMethod]
+        public void GivenPlantWithHighMeritOrderAndHighPminAndSecondAndThirdPlantOfDifferentFuelPrice_ShouldExcludePlantFromLoad()
+        {
+            IPowerPlantConverter converter = new PowerPlantConverter();
+            IFuelConverter fuelconverter = new FuelConverter();
+            IPayLoadConverter payLoadConverter = new PayLoadConverter(converter, fuelconverter);
+            var service = new PowerPlantService(converter, payLoadConverter);
+            var fuelsDict = new Dictionary<string, float> {
+                { "gas(euro/MWh)", 13.4f} ,
+                { "kerosine(euro/MWh)", 50.8f},
+                { "co2(euro/ton)", 20f},
+                { "wind(%)", 60f}
+            };
+
+
+            var pw2 = new PowerPlantInputDto { Name = "gasfirebig2", Type = "gasfired", Efficiency = 1f, Pmax = 460, Pmin = 100 };
+
+
+            var pw4 = new PowerPlantInputDto { Name = "tj1", Type = "turbojet", Efficiency = 1f, Pmax = 16, Pmin = 0, };
+            var pw5 = new PowerPlantInputDto { Name = "tj2", Type = "turbojet", Efficiency = 1f, Pmax = 16, Pmin = 0, };
+
+            var powerPlants = new List<PowerPlantInputDto> { pw2, pw4, pw5 }.ToArray();
+
+
+            //3 the payload
+            var payload = new PayLoadDto
+            {
+                Load = 24,
+                Fuels = fuelsDict,
+                PowerPlants = powerPlants
+            };
+
+
+
+            //act
+
+            var result = service.Compute(payload);
+
+            var exceptedResult = new[] {
+
+                new PowerPlantInputDto { Name = "tj1", Power = 16 },
+                new PowerPlantInputDto { Name = "tj2", Power = 8 },
+                new PowerPlantInputDto { Name = "gasfirebig2", Power = 0 },
+            };
+
+            var hashet = new HashSet<PowerPlantInputDto>(result);
+
+            Assert.AreEqual(payload.Load, result.Sum(r => r.Power));
+            Assert.IsTrue(hashet.SetEquals(exceptedResult));
+        }
+
+        [TestMethod]
+        public void GivenPlantWithLowMeritOrderAndHighPminAndSecondAndThirdPlantOfDifferentFuelPriceAndLoadThatRequiresFirstPlant_ShouldPartiallyIncludeFirstPlant()
+        {
+            IPowerPlantConverter converter = new PowerPlantConverter();
+            IFuelConverter fuelconverter = new FuelConverter();
+            IPayLoadConverter payLoadConverter = new PayLoadConverter(converter, fuelconverter);
+            var service = new PowerPlantService(converter, payLoadConverter);
+            var fuelsDict = new Dictionary<string, float> {
+                { "gas(euro/MWh)", 13.4f} ,
+                { "kerosine(euro/MWh)", 2f},
+                { "co2(euro/ton)", 20f},
+                { "wind(%)", 60f}
+            };
+
+
+            var pw2 = new PowerPlantInputDto { Name = "gasfirebig2", Type = "gasfired", Efficiency = 1f, Pmax = 460, Pmin = 100 };
+
+
+            var pw4 = new PowerPlantInputDto { Name = "tj1", Type = "turbojet", Efficiency = 1f, Pmax = 16, Pmin = 0, };
+            var pw5 = new PowerPlantInputDto { Name = "tj2", Type = "turbojet", Efficiency = 1f, Pmax = 8, Pmin = 0, };
+
+            var powerPlants = new List<PowerPlantInputDto> { pw2, pw4, pw5 }.ToArray();
+
+
+            //3 the payload
+            var payload = new PayLoadDto
+            {
+                Load = 224,
+                Fuels = fuelsDict,
+                PowerPlants = powerPlants
+            };
+
+
+
+            //act
+
+            var result = service.Compute(payload);
+
+            var exceptedResult = new[] {
+
+                new PowerPlantInputDto { Name = "tj1", Power = 16 },
+                new PowerPlantInputDto { Name = "tj2", Power = 8 },
+                new PowerPlantInputDto { Name = "gasfirebig2", Power = 200},
+            };
+
+            var hashet = new HashSet<PowerPlantInputDto>(result);
+
+            Assert.AreEqual(payload.Load, result.Sum(r => r.Power));
+            Assert.IsTrue(hashet.SetEquals(exceptedResult));
+        }
+        [TestMethod]
+        public void GivenThreePlantsWithSameMeritOrderAndFirstPlantWithHighestPminAndExpectedLoadEqualToPmaxOfFirstPlant_ShouldIncludeOnlyFirstPlantInLoad()
+        {
+            IPowerPlantConverter converter = new PowerPlantConverter();
+            IFuelConverter fuelconverter = new FuelConverter();
+            IPayLoadConverter payLoadConverter = new PayLoadConverter(converter, fuelconverter);
+            var service = new PowerPlantService(converter, payLoadConverter);
+            var fuelsDict = new Dictionary<string, float> {
+                { "gas(euro/MWh)", 13.4f} ,
+                { "kerosine(euro/MWh)", 50.8f},
+                { "co2(euro/ton)", 20f},
+                { "wind(%)", 60f}
+            };
+
+
+            var powerPlants = new List<PowerPlantInputDto> {
+                new PowerPlantInputDto { Name = "gasfirebig2", Type = "gasfired", Efficiency = 1f, Pmax = 100, Pmin = 100 },
+                new PowerPlantInputDto { Name = "gasfirebig3", Type = "gasfired", Efficiency = 1f, Pmax = 50, Pmin = 50 },
+                new PowerPlantInputDto { Name = "gasfirebig4", Type = "gasfired", Efficiency = 1f, Pmax = 25, Pmin = 25 },
+            }.ToArray();
+
+
+
+
+            //3 the payload
+            var payload = new PayLoadDto
+            {
+                Load = 100,
+                Fuels = fuelsDict,
+                PowerPlants = powerPlants
+            };
+
+
+
+            //act
+
+            var result = service.Compute(payload);
+
+            var exceptedResult = new[] {
+
+                new PowerPlantInputDto { Name = "gasfirebig2", Power = 100 },
+                new PowerPlantInputDto { Name = "gasfirebig3", Power = 0 },
+                new PowerPlantInputDto { Name = "gasfirebig4", Power = 0 },
+            };
+
+            var hashet = new HashSet<PowerPlantInputDto>(result);
+
+            Assert.AreEqual(payload.Load, result.Sum(r => r.Power));
+            Assert.IsTrue(hashet.SetEquals(exceptedResult));
+        }
+
+
+        public void GivenPMaxOfPlantExceedsRequestedLoad_ShouldMatchPlantPowerToRequestLoad()
+        {
+            IPowerPlantConverter converter = new PowerPlantConverter();
+            IFuelConverter fuelconverter = new FuelConverter();
+            IPayLoadConverter payLoadConverter = new PayLoadConverter(converter, fuelconverter);
+            var service = new PowerPlantService(converter, payLoadConverter);
+            var fuelsDict = new Dictionary<string, float> {
+                { "gas(euro/MWh)", 13.4f} ,
+                { "kerosine(euro/MWh)", 50.8f},
+                { "co2(euro/ton)", 20f},
+                { "wind(%)", 60f}
+            };
+
+
+            var pw2 = new PowerPlantInputDto { Name = "gasfirebig2", Type = "gasfired", Efficiency = 1f, Pmax = 460, Pmin = 100 };
+
+            var powerPlants = new List<PowerPlantInputDto> { pw2 }.ToArray();
+
+
+            //3 the payload
+            var payload = new PayLoadDto
+            {
+                Load = 200,
+                Fuels = fuelsDict,
+                PowerPlants = powerPlants
+            };
+
+
+
+            //act
+
+            var result = service.Compute(payload);
+
+            var exceptedResult = new[] {
+
+                 new PowerPlantInputDto { Name = "gasfirebig2", Power = 200 },
+            };
+
+            var hashet = new HashSet<PowerPlantInputDto>(result);
+
+            Assert.AreEqual(payload.Load, result.Sum(r => r.Power));
+            Assert.IsTrue(hashet.SetEquals(exceptedResult));
+        }
 
     }
 }
